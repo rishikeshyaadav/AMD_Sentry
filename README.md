@@ -1,42 +1,159 @@
-# AMD Deepfake Sentry
+<br />
+<div align="center">
+  <h1 align="center">AMD Deepfake Sentry 🛡️</h1>
 
-> **Theme:** AI for Social Good / Cybersecurity  
-> **Platform:** Browser Extension (Edge/Chrome) + Local Edge AI  
-> **Current Version:** 1.0 (Prototype)
+  <p align="center">
+    <strong>A Privacy-First AI Firewall for Your Browser</strong>
+    <br />
+    Real-time Deepfake Detection powered by Local Edge AI
+    <br />
+    <br />
+    <a href="#-demo">View Demo</a>
+    ·
+    <a href="#-installation">Installation</a>
+    ·
+    <a href="#-technology-stack">Tech Stack</a>
+  </p>
+
+  <p align="center">
+    <img src="https://img.shields.io/badge/Platform-AMD%20Ryzen%20AI-red?style=for-the-badge&logo=amd" alt="AMD Ryzen AI" />
+    <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" alt="Python" />
+    <img src="https://img.shields.io/badge/Framework-Flask-green?style=for-the-badge&logo=flask" alt="Flask" />
+    <img src="https://img.shields.io/badge/Model-Vision%20Transformer-orange?style=for-the-badge&logo=huggingface" alt="Hugging Face" />
+  </p>
+</div>
 
 ---
 
-## 1. Executive Summary
-**AMD Deepfake Sentry** is a privacy-first browser extension that detects AI-generated images (Deepfakes) in real-time as users browse the web. Unlike traditional tools that require cloud uploads, Sentry processes data **locally** on the user's device (simulating an NPU workload), ensuring zero data leakage and minimal latency.
+## 📋 Executive Summary
+
+**AMD Deepfake Sentry** is a browser-based "visual firewall" designed to restore trust in the internet. As users browse social media or news sites, Sentry automatically scans images in the background and analyzes them for AI-generated artifacts.
+
+Unlike traditional tools that rely on slow, privacy-invasive cloud APIs, Sentry processes everything **locally on the device**. By leveraging the power of **Edge AI**, we ensure:
+* **0% Data Leakage:** Your browsing history never leaves your laptop.
+* **Milliseconds Latency:** Instant verification without network lag.
 
 ---
 
-## 2. System Architecture
-The system consists of three distinct components communicating in a loop:
+## ⚙️ System Architecture
 
-* **The Watchman (Frontend Extension):** Scans webpages for images, filters out icons/ads, and sends valid image URLs to the local engine.
-* **The Engine (Local Python Server):** A Flask server that acts as the interface between the browser and the AI model. It handles downloading images and logging history.
-* **The Brain (AI Model):** A pre-trained Vision Transformer (ViT) running locally that analyzes pixel artifacts to determine if an image is Real or Fake.
+The system operates in a continuous loop between the browser and the local neural engine.
 
-### Data Flow Diagram
-`Browser (Image Found)` → `Content Script` → `Background Worker` → `Python Server (Localhost)` → `AI Inference` → `Verdict (Real/Fake)` → `Browser (Draw Border)`
+```mermaid
+graph LR
+    A[Browser Extension] -- "Image URL" --> B[Local Python Server]
+    B -- "Process Image" --> C{"AI Model (ViT)"}
+    C -- "Real/Fake Verdict" --> B
+    B -- "JSON Response" --> A
+    A -- "Red/Green Border" --> D[User View]
+
+```
+
+### The Three Pillars
+
+| Component | Name | Function |
+| --- | --- | --- |
+| **Frontend** | **The Watchman** | A Chrome/Edge Extension that scans the DOM, filters ads/icons, and highlights threats. |
+| **Backend** | **The Engine** | A local Flask server acting as the bridge between the browser and the NPU. |
+| **AI Model** | **The Brain** | A pre-trained Vision Transformer (ViT) that detects pixel-level inconsistencies. |
 
 ---
 
-## 3. Code Structure & File Manifest
-Here is exactly what every file in the project does:
+## 🛠 Technology Stack
+
+* **Core Logic:** `Python 3.12`
+* **API Server:** `Flask` + `Flask-CORS`
+* **AI Engine:** `Hugging Face Transformers` + `PyTorch`
+* **Image Processing:** `Pillow` (PIL)
+* **Browser Interface:** `JavaScript (Manifest V3)`
+* **Hardware Acceleration:** Optimized for **AMD Ryzen™ AI NPU** (Simulated via CPU for prototype).
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+* Python 3.10 or higher
+* Google Chrome or Microsoft Edge
+
+### Step 1: Ignite the Engine (Backend)
+
+1. Navigate to the backend folder:
+```bash
+cd AMD_Sentry/backend
+
+```
+
+
+2. Install the required dependencies:
+```bash
+pip install -r requirements.txt
+
+```
+
+
+3. Launch the server:
+* **Windows:** Double-click `Start_Sentry.bat`
+* **Manual:** Run `python server.py`
+
+
+4. *Wait for the message:* `AMD SENTRY: MODEL READY 🟢`
+
+### Step 2: Equip the Watchman (Frontend)
+
+1. Open your browser and go to `chrome://extensions`.
+2. Enable **Developer Mode** (Toggle in top-right).
+3. Click **Load Unpacked**.
+4. Select the `AMD_Sentry/extension` folder.
+5. **Pin** the extension to your toolbar.
+
+---
+
+## 🎮 Usage Guide
+
+1. **Start the Server:** Ensure your terminal window is open and the model is loaded.
+2. **Open the Command Center:** Go to `http://127.0.0.1:5000` to view the live threat dashboard.
+3. **Browse Safely:** Visit Google Images or Twitter.
+* 🟩 **Green Border:** Verified Real Image.
+* 🟥 **Red Border:** Detected AI Fake / Deepfake.
+
+
+
+---
+
+## 💡 The AMD Advantage
+
+> *Why not just use a Cloud API?*
+
+Sending every image a user sees to a cloud server is a privacy nightmare and creates massive latency.
+
+**Our "Edge AI" Solution:**
+Our architecture runs the inference **locally**.
+
+* **Privacy:** Personal browsing data never leaves the laptop.
+* **Latency:** No network round-trip time. Analysis happens in milliseconds.
+* **Future Roadmap:** While the prototype uses PyTorch, the production version will compile this model to **ONNX format** to run specifically on the **AMD Ryzen™ AI NPU**, offloading work from the main CPU/GPU to save battery life.
+
+---
+
+## 📂 Project Structure
 
 ```text
 AMD_Sentry/
-├── backend/                  # The "Brain" of the operation
-│   ├── server.py             # Main Logic: Runs the Web Server & loads AI model.
-│   ├── Start_Sentry.bat      # Launcher: One-click script to start the engine.
-│   └── templates/            # HTML files for the Dashboard
-│       └── dashboard.html    # The "Command Center" UI (charts/logs).
+├── backend/                  # The "Brain" (Flask + AI)
+│   ├── server.py             # Main Application Logic
+│   ├── requirements.txt      # Dependency List
+│   ├── Start_Sentry.bat      # One-Click Launcher
+│   └── templates/
+│       └── dashboard.html    # Live Command Center UI
 │
-└── extension/                # The "Eyes" (Browser Plugin)
-    ├── manifest.json         # ID Card: Defines permissions and file links.
-    ├── background.js         # The Messenger: Relays data between Tab <-> Server.
-    ├── content.js            # The Scanner: Runs on websites, finds images, draws borders.
-    ├── popup.html            # The visual menu when you click the toolbar icon.
-    └── popup.js              # Logic for the toolbar popup (checks system status).
+└── extension/                # The "Eyes" (Browser Extension)
+    ├── manifest.json         # Extension Configuration
+    ├── background.js         # Background Service Worker
+    ├── content.js            # DOM Manipulation Script
+    └── popup.html            # Extension Popup Menu
+
+```
+
+---
